@@ -121,45 +121,37 @@
         // --------------------------------  
 
 
+        ///////// BIG SWITCHES
 
-        // make map 
-        // make map 
-        // make map 
-        // make map 
+        var load_data = false;
 
 
-        var map = L.map('map').setView([51.21909462044748, 10.328125], 6);
-        mapLink = 
-            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
-        L.tileLayer(
-            /* 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'*/ /* 'http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png'*/ 'https://maps.luftdaten.info/tiles/{z}/{x}/{y}.png', {
-            attribution: '&copy; ' + mapLink + ' Contributors',
-            maxZoom: 18,
-            }).addTo(map);
-
-        map._initPathRoot();
-
-        // add the d3 layer in the leaflet map… where the d3 content will be… 
-        window.svg = d3.select("#map").select("svg");
-        window.g = window.svg.append("g");
-
-
-
-        // ------  ----  --  -  -
-        // ------  ----  --  -  -  new stuff : 
-        // ------  ----  --  -  -
-
-        // ------  ----  --  -  -
-        // ------  ----  --  -  -  new stuff : 
-        // ------  ----  --  -  -
-
-        // ------  ----  --  -  -
-        // ------  ----  --  -  -  new stuff : 
-        // ------  ----  --  -  -
 
 
         ///////// PARAMETERS 
-    
+
+
+
+        // --- data / objects     
+
+
+        // - data url formating
+
+        var data_url__filename_beginning = "24_hrs_pm_data__starting_from__";
+        var data_url__filename_end = ".json";
+
+        var data_sample_rates = [ "180", "360", "900", "1800" ];
+        var curr_data_time_interval = "180";
+
+        var base_urls_to_data__at_different_intervals = {};
+
+        base_urls_to_data__at_different_intervals[ "180" ] = 
+        "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/";
+
+
+
+        // what's currently used 
+        var base_url_to_data = base_urls_to_data__at_different_intervals[ "180" ];
 
         // this is where the days' worth of data live
         // - each object is one day's data, 
@@ -302,29 +294,32 @@
         //
         var load_new_time_data = function(){
 
-            console.log(">>>> load_new_time_data() ");
+            console.log(">>>> load_new_time_data() - master data loading switch === |"+String( load_data ).toUpperCase()+"|");
 
+            if( load_data ){
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/latest_data_since_midnight__20190322_17something.json";
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-1-9.json";
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/24_hrs_pm_data__starting_from__2019-3-22.json"
+                // save as window.data2 
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-8.json"
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-24.json"
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-2-25__2019-3-15.json";
+                // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/24_hrs_pm_data__starting_from__2019-3-22.json";
+                var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-2.json";
+                // fetch js, good boy! 
+                fetch( url )
+                    .then( function( resp ){ return resp.json() })
+                    .then( function(resp2){ 
+                        // store data                 
+                        window.data2 = resp2; 
+                        // feedback
+                        console.log("--- got data! width "+window.data2.data__p1_values.length+" sensors! - each with a length of "+window.data2.data__p1_values[0].length ); 
+                        // next step
+                        test_new__PART_TWO(); 
+                    }) ;
 
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/latest_data_since_midnight__20190322_17something.json";
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-1-9.json";
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/24_hrs_pm_data__starting_from__2019-3-22.json"
-            // save as window.data2 
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-8.json"
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-24.json"
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-2-25__2019-3-15.json";
-            // var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/24_hrs_pm_data__starting_from__2019-3-22.json";
-            var url = "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/24_hrs_pm_data__starting_from__2019-3-1__2019-3-2.json";
-            // fetch js, good boy! 
-            fetch( url )
-                .then( function( resp ){ return resp.json() })
-                .then( function(resp2){ 
-                    // store data                 
-                    window.data2 = resp2; 
-                    // feedback
-                    console.log("--- got data! width "+window.data2.data__p1_values.length+" sensors! - each with a length of "+window.data2.data__p1_values[0].length ); 
-                    // next step
-                    test_new__PART_TWO(); 
-                }) ;
+            }
+
         }
 
 
@@ -501,22 +496,79 @@
 
         ////// VERSION v2 things : 
 
+
+        // // - check if a particular days' data is available, and load it, 
+        //      - and possibly set up interface according to data, 
+        //          when the data is loaded 
+
         var check_if_date_available = function( date_to_check, load_new_data_if_date_not_avail, set_interface_to_new_data_if_data_already_avail ){
 
             console.log(">>>> check_if_date_available() - load_new_data_if_date_not_avail : |"+load_new_data_if_date_not_avail+"|");
 
+
+            // get date as string - can be useful as a key for the day data objects array             
+            // - input : date object 
+            var day_as_string = generate_date_as_year_month_day_string( date_to_check )
+
             // check that day data array for date
+            if( days_data[ day_as_string ] ){
+
+                // DATA EXISTS! 
+                // - go ahead and SETUP INTERFACE ACCORDING TO THE DATA …
+            }else{
+
+                // DATA DOESN'T EXIST
+                // - NEEDS LOADING ETC … 
+            }
 
 
-            // load data & setup interface if data not             
+            //         
         }
 
+
+
+        // // - load a given day's data, 
+        //      - set up interface according to data,if relevant 
+        //          when the data is loaded 
 
         var load_days_data__and_setup_as_appropriate = function( days_date_to_load, set_interface_to_new_data_if_data_already_avail ){
 
-            console.log(">>>> load_days_data__and_setup_as_appropriate() - load_new_data_if_date_not_avail : |"+load_new_data_if_date_not_avail+"|   set_interface_to_new_data_if_data_already_avail : |"+set_interface_to_new_data_if_data_already_avail+"|")
+            console.log(">>>> load_days_data__and_setup_as_appropriate() - load_new_data_if_date_not_avail : |"+load_new_data_if_date_not_avail+"|   set_interface_to_new_data_if_data_already_avail : |"+set_interface_to_new_data_if_data_already_avail+"|");
         }
 
+
+        // // - generate a valid url based on the givne date object 
+        //
+
+        var generate_url_for_data_from_date_object = function( in_date_object ){
+
+            console.log(">>>> generate_url_for_data_from_date_object : generateing url from date obejct : |"+in_date_object+"|");
+
+            // - build url 
+            out_url = base_urls_to_data__at_different_intervals[ curr_data_time_interval ]+data_url__filename_beginning+generate_date_as_year_month_day_string( in_date_object )+data_url__filename_end;
+
+            console.log("--- generated url |"+out_url+" from input date |"+in_date_object+"|");
+
+            return out_url;
+        }
+
+
+        var generate_date_as_year_month_day_string = function( in_date ){
+
+            console.log(">>>> generate_date_as_year_month_day_string() of in_date : |"+in_date+"|" );
+
+               // - fetch consitutent parts of a date 
+            var year_in_input = in_date_object.getFullYear();
+            var month_in_input = in_date_object.getMonth();
+            var day_in_input = in_date_object.getDay();
+
+            // - build url 
+            date_as_year_month_day_string = month_in_input+"-"+day_in_input+data_url__filename_end;
+
+            console.log("--- got date string : |"+date_as_year_month_day_string+"| from input date |"+in_date+"|" );
+
+            return date_as_year_month_day_string;                     
+        }
 
 
         ///////////////////////////////////////////////////////////
@@ -573,6 +625,28 @@
         ////////////////////   STARTUP !   //////////////////
         ////////////////////   STARTUP !   //////////////////
 
+
+        // make map 
+        // make map 
+        // make map 
+        // make map 
+
+
+        var map = L.map('map').setView([51.21909462044748, 10.328125], 6);
+        mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            /* 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'*/ /* 'http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png'*/ 'https://maps.luftdaten.info/tiles/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+            }).addTo(map);
+
+        map._initPathRoot();
+
+        // add the d3 layer in the leaflet map… where the d3 content will be… 
+        window.svg = d3.select("#map").select("svg");
+        window.g = window.svg.append("g");
+        
 
         // GO! 
         test_new();
