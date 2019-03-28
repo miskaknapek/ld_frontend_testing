@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Leaflet Map</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
+    />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+
+    <style type="text/css">
+
+        #map{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+
+
+    <script>
+
+/*
+	var planes = [
+		["7C6B07",-40.99497,174.50808],
+		["7C6B38",-41.30269,173.63696],
+		["7C6CA1",-41.49413,173.5421],
+		["7C6CA2",-40.98585,174.50659],
+		["C81D9D",-40.93163,173.81726],
+		["C82009",-41.5183,174.78081],
+		["C82081",-41.42079,173.5783],
+		["C820AB",-42.08414,173.96632],
+		["C820B6",-41.51285,173.53274]
+		];
+*/
+        
+        var positions = [];
+
+        var markers = [];
+
+
+        // --------------------------------  
+
+
+
+        // make map 
+        var map = L.map('map').setView([50.21909462044748, 6.328125], 8);
+        mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            /* 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'*/ 'http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+            }).addTo(map);
+
+
+        map._initPathRoot();
+
+
+        // add the d3 layer in the leaflet map… where the d3 content will be… 
+        window.svg = d3.select("#map").select("svg");
+        window.g = window.svg.append("g");
+
+
+
+        
+        // --------------------------------  
+
+
+        var fetch_positions = function(){
+
+            console.log(">>> fetch_positions() ");
+
+            fetch( "https://www.opensense.network/beta/api/v1.0/sensors?measurandId=11" ).then( function( resp ){ 
+                    return resp.json(); }).then( 
+                        function( val ){ window.position_data = val; 
+                        // add a variable indicating whether it has been positioned on the map 
+                        window.position_data.map( function(d){
+                            d.positioned_on_map = false;
+                        });
+                            }).then( 
+
+                                function(){ console.log( "--- positions have been loaded! - length "+window.position_data.length );  
+
+                                // then set up the d3 things! 
+                                //// window.add_d3_layer_etc();
+
+                                /* window.position_data.map( function(d){ console.log( d.location );    });  */  
+
+                                //// add fetched coordinates to a nice little map ;) 
+                                //      - and then position them
+                                //          - and then register an event handler for the 
+                                //              
+                                position_markers_on_map__after_map_move__WITH_D3();
+
+                             });
+        }
+
+
+
+
+
+
+        //////   now with d3 - circle plotting … 
+        //
+        var position_markers_on_map__after_map_move__WITH_D3 = function(){
+
+            console.log(">>>> position_markers_on_map__after_map_move__WITH_D3() ");
+
+            window.feature = window.g.selectAll("circle")
+                                .data( window.position_data )
+                                .enter()  
+                                    .append( "circle" )
+                                    .style( "stroke", "yellow" )
+                                    .style( "opacity", .5 )
+                                    .style( "fill", "rgba( 255,255,255,0.1)" )
+                                    .attr("r", 4 );
+
+            //// register event handlers on map move 
+            map.on("viewreset", update_d3_layer );
+            // and do a quick update for the first viewing… 
+            update_d3_layer();            
+        }
+
+
+
+
+
+        //////  - update d3 map layer on map move 
+        //
+        var update_d3_layer = function(){
+
+            console.log(">>> update_d3_layer() ");
+
+            window.feature.attr("transform", function(d){
+                // console.log( d );
+                var loc = [ d.location.lat, d.location.lng] ;
+                var lat_to_px = map.latLngToLayerPoint( loc ).x;
+                var lng_to_px = map.latLngToLayerPoint( loc ).y ;
+                // console.log("--- lng/lng_to_px : "+lat_to_px+", "+lng_to_px );
+                return "translate("+lat_to_px+","+lng_to_px+")";
+            });
+
+        }
+
+
+
+
+
+
+        // ---------------
+        // ---------------  startup 
+        // ---------------
+
+
+        // fetch circle coordinates from luftdaten via 
+        // - and also to the event binding to map movement ( this should trigger the update function … )
+        fetch_positions();
+
+
+
+
+    </script>
+</body>
+</html>
