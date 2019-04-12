@@ -5,7 +5,7 @@
 }
 
 .leaflet-control{
-    top: 120px !important;
+    top: 130px !important;
 }
 
 body{
@@ -106,9 +106,9 @@ circle{
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 250px;
-    border: 1px dashed rgba( 128, 100, 64, 0.25 );
-    background-color: rgba(255,255,255,0.25);
+    height: 50px;
+    /*border: 1px dashed rgba( 128, 100, 64, 0.25 );*/
+    /*background-color: rgba(255,255,255,0.25);*/
 }
 
 /* ----- date selection box ----- */
@@ -121,8 +121,8 @@ circle{
     top: 0px;
     left: 0px;
     width: 100px;
-    height: 70px;
-    /*border: 1px solid rgb( 155, 199, 235 );*/
+    height: 130px;
+    border: 1px solid rgb( 155, 199, 235 );
     background-color: rgba(255,255,255,0.75);
 }
 
@@ -161,7 +161,7 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 23%;
+    top: 17px;
     left: 0px;
     width: 50px;
     height: 50px;
@@ -177,7 +177,7 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 23%;
+    top: 16px;
     right: 0px;
     width: 50px;
     height: 50px;
@@ -194,12 +194,29 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 19%;
+    top: 17px;
     left: 0px;
     width: 200px;
     height: 50px;
     /*border: 1px dashed rgba( 128, 100, 64, 0.25 );*/
     text-align: center;
+}
+
+#date_selection_box__day_selection__calendarbox{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;     
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    width: 100%;
+    height: 50%;
+    border: 1px dashed rgba( 128, 100, 64, 0.25 );
+    text-align: right;
+    z-index: 90;
+    background-image: url( images/date_selection__calendar_illustration.svg );
+    background-position: 48% 52%;           
+    background-repeat: no-repeat ;      
 }
 
 
@@ -214,7 +231,7 @@ circle{
     top: 0px;
     right: 0.5%;
     width: calc( 99.5% - 110px );
-    height: 70px;
+    height: 110px;
     border: 1px solid rgb( 155, 199, 235 );
     background-color: rgba(255,255,255,0.75);    
 }
@@ -291,10 +308,10 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 20px;
+    top: 0px;
     left: 58px;
     width: calc( 100% - 116px );
-    height: 40px;
+    height: 111px;
     background-color: rgba( 42, 46, 127, 0.10 );
     /*border: 1px dashed rgba( 128, 100, 64, 0.25 );*/
     pointer-events: none;
@@ -305,11 +322,12 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 20px;
+    top: 1px;
     left: calc( 100% - 80px);
-    width: 20px;
-    height: 35px;
-    background-color: rgba( 42, 46, 127, 0.5 );
+    width: 21px;
+    height: 108px;
+    border: 2px solid rgba( 42, 46, 127, 0.10 );
+    background-color: rgba( 255, 255, 255, 0.5 );
     /*border: 1px dashed rgba( 128, 100, 64, 0.25 );*/
     pointer-events: none;
 }
@@ -351,8 +369,8 @@ circle{
     position: absolute;
     top: 0px;
     left: 52px;
-    width: 2px;
-    height: 68px;
+    width: 4px;
+    height: 116px;
     background-color: rgb( 42, 46, 127  );
 }
 
@@ -376,7 +394,7 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 110px;
+    top: 130px;
     right: 0px;
     width: 138px;
     height: 69px;
@@ -455,12 +473,13 @@ circle{
     position: absolute;
     float: left;
     left: 60px;
-    top: 123px;
+    top: 141px;
     padding: 10px;
     min-width: 100px;
     min-height: 68px;
     border: 2px dashed rgba( 128, 100, 0, 0.25 );
     background-color: rgba(255,255,255,1.0);
+    opacity: 0.5;
     font-size: 16px;
     z-index: 100;   
 }
