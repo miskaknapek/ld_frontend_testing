@@ -14,6 +14,10 @@ body{
     color: rgb( 42, 46, 127 );
 }
 
+.hide_me__aka__display_none__class{
+    display: none;
+}
+
 #time_marker_box_outer_outer{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;    
@@ -206,7 +210,7 @@ circle{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 0px;
     width: 100%;
@@ -228,12 +232,13 @@ circle{
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: absolute;
-    top: 310px;
-    left: 110px;
-    min-width: 200px;
+    left: 0px;
+    top: 0px;    
+    width: 473px;
     min-height: 100px;
     border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    background-color: rgba(255,255,255,0.95 );
+    z-index: 1000;
 }
 
 #big_popup_calendar__current_month_n_year__outer{
@@ -246,22 +251,9 @@ circle{
     margin-top: 20px;
     margin-bottom: 20px;
     width: 100%;
-    min-height: 25px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
-}
-
-#big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow{    
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;     
-    position: relative;
-    top: 0px;
-    margin-left: 20%;
-    width: 20px;
-    height: 40px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    height: 10%;
+    /*border: 1px solid rgba( 155, 199, 235, 0.1 );*/
+    background-color: rgba(255,255,255,0.05);
 }
 
 #big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year{
@@ -270,13 +262,28 @@ circle{
     box-sizing: border-box;     
     position: absolute;
     top: 0px;
-    left: 40%;
-    width: 20%px;
+    left: 0%;
+    width: 100%;
     height: 40px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    /*border: 1px solid rgba( 155, 199, 235, 0.25 );*/
+    font-size: 32px;
+    line-height: 125%;
     text-align: center;
 }
+
+#big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow{    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;     
+    position: relative;
+    top: 0px;
+    width: 50%  ;
+    height: 60px;
+    background-image: url( images/date_selection__LEFT_ARROW.svg );
+    background-position: 60% -9px;           
+    background-repeat: no-repeat ;      
+}
+
 
 #big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow{    
     -webkit-box-sizing: border-box;
@@ -284,11 +291,12 @@ circle{
     box-sizing: border-box;     
     position: absolute;
     top: 0px;
-    left: 80%;
-    width: 20px;
-    height: 40px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    left: 50%;
+    width: 50%;
+    height: 60px;
+    background-image: url( images/date_selection__RIGHT_ARROW.svg );
+    background-position: 40% -9px;           
+    background-repeat: no-repeat ;       
 }
 
 #big_popup_calendar__actual_calendar__outer{    
@@ -298,14 +306,12 @@ circle{
     position: relative;
     top: 0px;
     left: 0px;
-    margin-top: 20px;
-    margin-left:10%;
+    margin-left: 37px;
+    margin-top: 27px;    
     margin-bottom: 20px;
-    margin-right:10%;
-    min-width: 150px;
-    min-height: 200px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    min-height: 100%;
+    /*border: 1px solid rgb( 155, 199, 235 );*/
+    /*background-color: rgba(255,255,255,0.75);*/
 }
 
 #big_popup_calendar__actual_calendar__blank_date{    
@@ -324,16 +330,25 @@ circle{
 .date_individual{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-    box-sizing: border-box;     
+    box-sizing: border-box;
+    display:inline-block;
     position: relative;
     float: left;
     top: 0px;
     left: 0px;
-    width: 20px;
-    height: 20px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);     
-    text-align: center;   
+    width: 55px;
+    height: 55px;
+/*    padding-top: 14%;*/
+    border: 1px solid rgba( 199, 199, 199, 0.3 );
+    background-color: rgba(255,255,255,0.9 );
+    font-size: 21px;
+    text-align: center;
+    line-height: 272%;
+    cursor: pointer;
+}
+
+.date_individual:hover{
+    background-color: rgba( 155, 199, 235,0.75);  
 }
 
 .big_popup_calendar__actual_calendar__blank_date{
@@ -351,20 +366,24 @@ circle{
     background-color: rgb( 42, 46, 127 );   
 }
 
-.big_popup_calendar__bottom_exit_button{
+#big_popup_calendar__bottom_exit_button{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     position: relative;
+    float: left;
     top: 0px;
     right: 0px;
-    margin-top: 20px;
+    margin-top: 39px;  
     margin-bottom: 20px;
-    margin-right: 20px;
-    min-width: 30px;
-    min-height: 30px;
-    border: 1px solid rgb( 155, 199, 235 );
-    background-color: rgba(255,255,255,0.75);
+    width: 100%;
+    height: 50px;
+    /*background-color: rgba(255,255,255,0.75);*/
+    /*border: 1px solid rgba( 155, 199, 235, 0.5 ); */
+    background-image: url( images/big_calendar_close_box_icon.svg );
+    background-position: 95% 0px;       
+    background-size: auto;    
+    background-repeat: no-repeat ;        
 }
 
 
@@ -605,24 +624,73 @@ circle{
 
 /* ----- LOADING DATA! ----- */
 
-#date_selection_box__LOADING_DATA__panel{
+#loading_data_element__whole_screen_element{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
     display: none;
     position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.75);
+    z-index: 1200;
+}
+
+#loading_data_element__dialogue_box_outer{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;     
+    position: relative;
+    display: block;
+    top: 40%;
+    left: calc( 50% - 150px );
+    width: 300px;
+    min-height: 200px;
+    border: 1px dashed rgba( 128, 100, 64, 0.5 );
+    background-color: rgba(255,255,255,0.75);
+}
+
+#loading_data_element__dialogue_box_outer__loading_data_text{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;     
+    position: relative;
+    display: inline-block;
     float: left;
-    top: 2px;
-    left: 2px;
-    width: calc( 100% - 4px );
-    height: 48px;
-    border: 1px dashed rgba( 128, 100, 64, 0.25 );
-    background-color: rgba(255,255,255,1.0);
-    font-size: 33px;
-    font-style: italic;
-    text-align: center;
-    letter-spacing: 5px;
-    z-index: 100;
+    top: 0px;
+    left: 0px;
+    padding: 20px;
+    padding-left: 25px;
+    margin-bottom: 20px;
+    width: 100%;
+    height: 75px;
+    font-size: 32px;
+}
+
+#loading_data_element__dialogue_box_outer__cancel_button_and_text{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;     
+    position: absolute; 
+    display: inline-block;
+    float: right;
+    bottom: 0%;
+    right: 0px;
+    margin: 20px;
+    /*min-width: 20%;*/
+    min-height: 50px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 1px dashed rgba( 128, 100, 64, 0.5 );
+    color: red;
+    line-height: 175%;
+}
+
+#loading_data_element__dialogue_box_outer__cancel_button_and_text:hover{
+    background-color: rgba( 250, 200, 200, 0.5 );
 }
 
 
@@ -632,7 +700,7 @@ circle{
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;     
-    display: inline;
+    display: none;
     position: absolute;
     float: left;
     left: 60px;
