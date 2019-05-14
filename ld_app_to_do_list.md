@@ -2,6 +2,40 @@
 ———————————————
 
 
+## New to-do list 
+
+### Short term
+
+- Add a contextual menu 
+	- check about making a design that's compatible with both a verticl and horisontal time-slider
+	- ideall it's located in the top left … 
+
+### Medium term
+
+- Add a timeslider to the right hand side of the screen, for easier thumb-scrolling, when on mobile. 
+	- You could leave the bits for the top-screen horisontal time-slider, the overhead is likely small… 
+		… details may vary 
+
+- Think about doing a particle simulatino for wind movement simulation… 
+( particle speed relative to wind speed? )
+
+
+### Long term
+
+- Think about how to include humidity data 
+	- Eg look for weather services that gather that data and distribute it. 
+
+
+
+
+
+
+
+
+
+## OLD version 
+
+
 ### Short term to-doo list 
 
 general 

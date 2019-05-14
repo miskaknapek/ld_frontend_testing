@@ -1,18 +1,32 @@
 <!DOCTYPE html>
-<html>
+    <html>
 <head>
     <title>Simple Leaflet Map</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="style.css"
     />
-    <!-- leaflet -->
+
+<!--
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
-    />
+    />    
     <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+-->
+    <!-- NEW LEAFLE! -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+
+
     <!-- d3 --> 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <!-- fonts via google -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <!-- canvas layer -->
+    <script src="js/L.CanvasLayer.js"></script>
 
 </head>
 <body>
@@ -32,12 +46,12 @@
 
 
             <div id="date_selection_box__year_and_month">
-                    2019.03
+                    -
             </div>
 
 
             <div id="date_selection_box__current_day">
-                    27 
+                    - 
             </div>
 
 
@@ -118,27 +132,21 @@
 
 
 
-        <div id="big_popup_calendar__outer_outer">
+        <div id="big_popup_calendar__outer_outer" class="hide_me__aka__display_none__class">
 
 
             <div id="big_popup_calendar__current_month_n_year__outer">
 
-                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow"> << </div>
+                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year"></div>
 
-                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year">2019.3</div>
+                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow"> </div>
 
-                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow"> >> </div>
-
-            </div>
-
-
-            <div id="big_popup_calendar__actual_calendar__outer">
-
-                <div class="date_individual big_popup_calendar__actual_calendar__blank_date">0</div> 
-                <div class="date_individual big_popup_calendar__actual_calendar__actual_date">2</div> 
-                <div class="date_individual big_popup_calendar__actual_calendar__current_date">1</div>
+                <div id="big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow"> </div>
 
             </div>
+
+
+            <div id="big_popup_calendar__actual_calendar__outer"> </div>
 
 
             <div id="big_popup_calendar__bottom_exit_button"></div>
@@ -150,26 +158,20 @@
 
         <div id="playback_control_box__outer_outer">
 
-            <div id="playback_control_box__left_double_arrows">
-                <<
-            </div>            
-
-
             <div id="playback_control_box__play_mode_button">
-                ??
             </div>            
 
-
-            <div id="playback_control_box__right_double_arrows">
+            <div id="playback_control_box__left_double_arrows">
                 >>
             </div>            
 
+            <div id="playback_control_box__right_double_arrows">
+                <<
+            </div>            
+
         </div>
+    
 
-
-        <div id="date_selection_box__LOADING_DATA__panel">
-            LOADING DATA :) 
-        </div>       
 
         <div id="debug_window">
             DEBUG OUTPUT! :) 
@@ -179,6 +181,19 @@
 
     </div>
 
+
+    <div id="loading_data_element__whole_screen_element">
+        
+        <div id="loading_data_element__dialogue_box_outer">
+            <div id="loading_data_element__dialogue_box_outer__loading_data_text">
+                loading data!
+            </div>
+            
+            <div id="loading_data_element__dialogue_box_outer__cancel_button_and_text">
+                cancel loading!
+            </div>
+        </div>
+    </div>   
 
 
     <script>
@@ -223,20 +238,20 @@
         var data_url__filename_beginning = "24_hrs_pm_data__starting_from__";
         var data_url__filename_end = ".json";
 
-        var data_sample_rates = [ "180", "360", "900", "1800" ];
-        var curr_data_time_interval = "180";
+        // var data_sample_rates = [ "180", "240", "300", "360", "600", "900", "1800" ];
+        var curr_data_time_interval = 480;
 
         var base_urls_to_data__at_different_intervals = {};
 
-        base_urls_to_data__at_different_intervals[ "180" ] = 
-        "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__180_s_intervals/";
+        base_urls_to_data__at_different_intervals[ String( curr_data_time_interval ) ] = 
+        "http://sourisr.kapsi.fi/luftdaten/luftDaten_data_explorations/ld_daten_various/tabular_ld_data__480_s_intervals/";
 
 
-        var number_of_sample_periods_in_a_day__CALCULATED = 24*60*60/180;
+        var number_of_sample_periods_in_a_day__CALCULATED = 24*60*60/curr_data_time_interval;
 
 
         // what's currently used 
-        var base_url_to_data = base_urls_to_data__at_different_intervals[ "180" ];
+        var base_url_to_data = base_urls_to_data__at_different_intervals[ String( curr_data_time_interval ) ];
 
         // this is where the days' worth of data live
         // - each object is one day's data, 
@@ -331,11 +346,11 @@
         var date_selection_box__day_selection__arrow_right__id_name = "date_selection_box__day_selection__arrow_right";
 
         // current month year
-        var date_selection_box__year_and_month__DOM_obj
+        var date_selection_box__year_and_month__DOM_obj = -1;
         var date_selection_box__year_and_month__id_name = "date_selection_box__year_and_month";
 
         // current day 
-        var date_selection_box__current_day__DOM_obj
+        var date_selection_box__current_day__DOM_obj = -1;
         var date_selection_box__current_day__id_name = "date_selection_box__current_day";
 
         // small calndar illustration box 
@@ -360,6 +375,32 @@
         var big_popup_calendar__actual_calendar__outer__id_name = "big_popup_calendar__actual_calendar__outer";
 
 
+        var big_popup_calendar__bottom_exit_button__DOM_obj = -1;
+        var big_popup_calendar__bottom_exit_button__id_name = "big_popup_calendar__bottom_exit_button";
+
+
+        //// loading data screen
+
+
+        var loading_data_element__whole_screen_element__DOM_obj = -1;
+        var loading_data_element__whole_screen_element__id_name = "loading_data_element__whole_screen_element";
+        var loading_data_element__dialogue_box_outer__cancel_button_and_text__DOM_obj = -1;
+        var loading_data_element__dialogue_box_outer__cancel_button_and_text__id_name = "loading_data_element__dialogue_box_outer__cancel_button_and_text";
+
+
+
+        // --- event handling random bits 
+
+        // var touch_mouse_pointer_mouseup_events_array = [ 'pointerup', 'pointerout', 'MSPointerUp', 'MSPointerOut' ];
+        var touch_mouse_pointer_mouseup_events_array = [ 'pointerup', 'MSPointerUp' ];
+
+        // --- canvas matters
+
+        // canvas context 
+        var ctx = -1; 
+
+        // looked up id of canvas layer id 
+        var current_canvas_layer_id = -1;
 
         // --- visual distance measurements
 
@@ -426,6 +467,30 @@
 
 
         ////////// ========================. METHODS ===================
+
+
+        var toggle_classname_in_given_dom_element = function( element, classname ){
+
+            console.log(">>>> toggling class |"+classname+"| on the given element");
+
+            if (element.classList) { 
+                element.classList.toggle( classname );
+            } else {
+                // For IE9
+                var classes = element.className.split(" ");
+                var i = classes.indexOf( classname );
+
+                if (i >= 0) {
+                    classes.splice(i, 1);
+                }
+                else {
+                    classes.push( classname );
+                    element.className = classes.join(" "); 
+                }
+                //
+            }
+            //
+        }
 
 
 
@@ -599,11 +664,40 @@
 
             console.log("\n>>> set_visuals_according_to_days_data_refresh() ");
 
+            // --- updae map markers 
+
             // position_markers_on_map__after_map_move__WITH_D3__NEW_NEW();
             position_markers_on_map__after_map_move__WITH_D3__NEW_OBJECT_ORIENTED_VERSION( current_dateTime__as_YY_MM_DD_string );            
 
             // set_start_and_end_time__on_screen__according_to_data();
             set_start_and_end_time__on_screen__according_to_data__OBJECT_ORIENTED_VERSION( current_dateTime__as_YY_MM_DD_string );
+
+
+
+            // --- update slider 
+
+            get_current_day_relative_data_index__based_on_relative_slider_position();
+
+            get_time_of_day_accoridng_to_curr_time_slider_decimal_position();
+
+            // update the text in the slider
+            update_time_slider_text_to_show_current_time_of_day();
+
+            // update the slider position accordingly 
+            set_timeslide_current_position_market_to_current_position_in_data();
+            
+
+
+            // ---- updae small and large calendar dates and texts 
+
+            // // // update calendar dates
+            small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date();
+
+            big_calendar__set_current_vis_date_as_curr_calendar_date();
+
+            big_calendar__set_current_year_month_text_to_current_temp_date();
+
+            big_calendar__wipe_calendar__and__fill_calendar_with_curr_temp_month_days();
 
         }
 
@@ -763,6 +857,9 @@
 
             console.log("\n>>> position_markers_on_map__after_map_move__WITH_D3__NEW_OBJECT_ORIENTED_VERSION() - of day : |"+current_dateTime__as_YY_MM_DD_string+"|" );
 
+            console.log("--- NOT POSITIONING MARKERS - disabled waiting for CANVAS VERSION ");
+
+/*
             // REDUNDANT? 
             window.feature = window.g.selectAll("circle").remove();
 
@@ -778,9 +875,33 @@
                                     // .style( "opacity", 1 )
                                     // .style( "fill", "rgba( 255,255,255,0.1)" )
                                     .attr("r", 4 );                                    
+*/
         }
 
 
+
+
+        //////// --------- loading screen dom stuff
+
+
+        // show the loading screen 
+        var show_loading_screen = function(){
+
+            console.log(">>>> show_loading_screen() ");
+
+            loading_data_element__whole_screen_element__DOM_obj.style.display = "block";
+
+        }
+
+
+        // hide the loading screen 
+        var hide_loading_screen = function(){
+
+            console.log(">>>> hide_loading_screen() ");
+
+            loading_data_element__whole_screen_element__DOM_obj.style.display = "none";
+
+        }        
 
 
 
@@ -950,15 +1071,15 @@
 
             // // SMALL CALENDAR 
 
-            big_popup_calendar__outer_outer__DOM_obj = document.getElementById( big_popup_calendar__outer_outer__id_name );
+            date_selection_box__day_selection__arrow_left__DOM_obj = document.getElementById( date_selection_box__day_selection__arrow_left__id_name ) ;
 
-            big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow__DOM_obj = document.getElementById( big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow__id_name );
+            date_selection_box__day_selection__arrow_right__DOM_obj = document.getElementById( date_selection_box__day_selection__arrow_right__id_name ) ;
 
-            big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year__DOM_obj = document.getElementById( big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year__id_name );
+            date_selection_box__year_and_month__DOM_obj = document.getElementById( date_selection_box__year_and_month__id_name ) ;
 
-            big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow__DOM_obj = document.getElementById( big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow__id_name );
+            date_selection_box__current_day__DOM_obj = document.getElementById( date_selection_box__current_day__id_name ) ;
 
-            big_popup_calendar__actual_calendar__outer__DOM_obj = document.getElementById( big_popup_calendar__actual_calendar__outer__id_name );
+            small_calendar__date_selection_box__day_selection__calendarbox__DOM_obj = document.getElementById( small_calendar__date_selection_box__day_selection__calendarbox__id_name ) ;
 
 
             // // BIG CALENDAR
@@ -973,6 +1094,17 @@
             big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow__DOM_obj = document.getElementById( big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow__id_name );
 
             big_popup_calendar__actual_calendar__outer__DOM_obj = document.getElementById( big_popup_calendar__actual_calendar__outer__id_name );
+
+            big_popup_calendar__bottom_exit_button__DOM_obj = document.getElementById( big_popup_calendar__bottom_exit_button__id_name );      
+
+
+            // // LOADING SCREEN
+
+            // outer
+            loading_data_element__whole_screen_element__DOM_obj = document.getElementById( loading_data_element__whole_screen_element__id_name );
+
+            // cancel button 
+            loading_data_element__dialogue_box_outer__cancel_button_and_text__DOM_obj = document.getElementById( loading_data_element__dialogue_box_outer__cancel_button_and_text__id_name ) ;
 
         }
 
@@ -1055,7 +1187,34 @@
             current_calendar_temp_date = current_dateTime__as_Date_obj;
 
             console.log("--- just set the current day ("+current_dateTime__as_Date_obj+") as the current calendar date |"+current_calendar_temp_date+"|" );
+
         }
+
+
+
+        /// set big (temp) calendar YEAR.MONTH text according to the current temp date
+
+        var big_calendar__set_current_year_month_text_to_current_temp_date = function(){
+
+            console.log(">>>> big_calendar__set_current_year_month_text_to_current_temp_date() - setting the big calendar YEAR.MONTH numbers/date to the current temp date :|"+current_calendar_temp_date+" >> "+current_calendar_temp_date.getFullYear()+"."+current_calendar_temp_date.getMonth()+1 );
+
+            // just set it 
+            // - the +1 is there because the Date object starts the month count from 0 / zero
+            big_popup_calendar__current_month_n_year__curr_month_n_year_area__curr_month_n_year__DOM_obj.innerText = current_calendar_temp_date.getFullYear()+"."+(current_calendar_temp_date.getMonth()+1);
+        }
+
+
+        //// set small calendar YEAR, MONTH, DAY, according to current date… 
+
+        var small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date = function(){
+
+            console.log(">>>> small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date() ");
+
+            date_selection_box__year_and_month__DOM_obj.innerText = current_dateTime__as_Date_obj.getFullYear()+"."+( current_dateTime__as_Date_obj.getMonth()+1);
+
+            date_selection_box__current_day__DOM_obj.innerText = current_dateTime__as_Date_obj.getDate();
+        }
+
 
 
         //// advance or reduce the current month by N +/0 months 
@@ -1071,6 +1230,7 @@
             return out_date;
 
         }
+
 
 
         // - helper function to the big calendar function… 
@@ -1092,6 +1252,48 @@
             current_calendar_temp_date = return_date_thats_N_months_advanced_or_retraced( current_calendar_temp_date, -1 );
 
             console.log("-- to : |"+current_calendar_temp_date+"|" );
+        }
+
+
+
+        //// same as for months, but for days
+
+        var return_date_that_N_days_advanced_or_retracted = function( in_date, advance_by_N_days ){
+
+            console.log(">>>> return_date_that_N_days_advanced_or_retracted() - move indate : |"+in_date+"| by |"+advance_by_N_days+"| days ");
+
+            var out_date = new Date(  in_date.setDate( in_date.getDate() + advance_by_N_days  ) );
+
+            console.log("---- new re/advanced date : "+out_date );
+
+            return out_date;
+        }
+
+
+        // helper function for the current date (and small calendar)
+
+        var current_date__advance_by_one_day = function(){
+
+            console.log(">>>> current_date__advance_by_one_day() from "+current_dateTime__as_Date_obj );
+
+            current_dateTime__as_Date_obj = return_date_that_N_days_advanced_or_retracted( current_dateTime__as_Date_obj, +1 );
+            // and make the text version of the current date … 
+            current_dateTime__as_YY_MM_DD_string = generate_date_as_year_month_day_string( current_dateTime__as_Date_obj );
+
+            console.log("--- to : "+current_dateTime__as_Date_obj );
+        }
+
+        // and the reverse
+        var current_date__retract_by_one_day = function(){
+
+            console.log(">>>> current_date__retract_by_one_day() from "+current_dateTime__as_Date_obj );
+
+            current_dateTime__as_Date_obj = return_date_that_N_days_advanced_or_retracted( current_dateTime__as_Date_obj, -1 );
+            // and make the text version of the current date … 
+            current_dateTime__as_YY_MM_DD_string = generate_date_as_year_month_day_string( current_dateTime__as_Date_obj );
+
+
+            console.log("--- to : "+current_dateTime__as_Date_obj );
         }
 
 
@@ -1175,9 +1377,12 @@
 
             //// add the current month's days - and mark the current day! 
 
+
+
+
             // set up some reusable variables : 
-            var curr_temp_cal_year =  current_calendar_temp_date.getMonth();
-            var curr_temp_cal_month = current_calendar_temp_date.getFullYear();
+            var curr_temp_cal_year  = current_calendar_temp_date.getFullYear();
+            var curr_temp_cal_month = current_calendar_temp_date.getMonth();
 
             // loop finally… and create the real calendar days 
             for( var i = 1; i <= num_of_calendar_days_of_curr_temp_month; i++ ){
@@ -1188,7 +1393,11 @@
                 // set a class 
                 curr_element.classList.add("date_individual");
 
-                if( current_dateTime__as_Date_obj === new Date( curr_temp_cal_year, curr_temp_cal_month, i) ){
+                // add a sepcial marker on the current date
+                // for comparison, in the loop below, get the temp date as a string
+                curr_temp_date__as__YY_MM_DD__string = generate_date_as_year_month_day_string( new Date( curr_temp_cal_year, curr_temp_cal_month, i) );
+
+                if( curr_temp_date__as__YY_MM_DD__string === current_dateTime__as_YY_MM_DD_string ){
                     curr_element.classList.add("big_popup_calendar__actual_calendar__current_date");
                 }
 
@@ -1196,13 +1405,34 @@
                 curr_element.innerText = i ;
 
                 // add some data 
-                curr_element.dataset.curr_cal_month = curr_temp_cal_year  ;
-                curr_element.dataset.curr_cal_year =  curr_temp_cal_month ;
-                curr_element.dataset.curr_cal_day = i;
+                curr_element.dataset.curr_cal_month =  curr_temp_cal_month ;
+                curr_element.dataset.curr_cal_year =   curr_temp_cal_year ;
+                curr_element.dataset.curr_cal_date =    i;
 
                 // add some interaction 
+        /*
                 curr_element.addEventListener("click", function(){
                     console.log("--- click! my number is "+this.dataset.curr_cal_year+"/"+this.dataset.curr_cal_month+"/"+this.dataset.curr_cal_day );
+                });
+        */
+
+                // 
+                touch_mouse_pointer_mouseup_events_array.map( function(d){
+
+                    curr_element.addEventListener( d, function(d){
+                         console.log("--- click! my number is "+this.dataset.curr_cal_year+"/"+this.dataset.curr_cal_month+"/"+this.dataset.curr_cal_date );
+
+                         // make a date obj of the desired date
+                         desired_date_to_load_as__date_obj = new Date( this.dataset.curr_cal_year, this.dataset.curr_cal_month, this.dataset.curr_cal_date );
+
+                         // get the date as a string
+                         desired_date_to_load_as__YY_MM_DD_string = generate_date_as_year_month_day_string( desired_date_to_load_as__date_obj );
+
+                         // finally, try loading it! 
+                         check_if_date_available__and_load_and_setup_if_needed( desired_date_to_load_as__date_obj );
+
+                    }, false );
+
                 });
 
                 // // // append ! 
@@ -1244,7 +1474,7 @@
 
 
         ////// bind event listeners for various interactive manipulations 
-        bind_event_listeners_for_interactive_events = function(){
+        var bind_event_listeners_for_interactive_events = function(){
 
             console.log(">>>> bind_event_listeners_for_interactive_events() ");
 
@@ -1284,9 +1514,134 @@
 
         var bind_event_listeners_to_calendar_matters = function(){
 
+            //// bind evens to the calendar clicks … 
+            touch_mouse_pointer_mouseup_events_array.map( function(d){
+                date_selection_box__day_selection__arrow_left__DOM_obj.addEventListener( d, function(){ 
+
+                    console.log("--- please advance the small calendar date by a day");
+
+                    current_date__retract_by_one_day();
+
+                    small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date();
+
+                    console.log("--- DON'T FORGET TO UPDATE THE DAY OF THE VISUALISTION! ");
+
+                    // finally, try loading it! 
+                    check_if_date_available__and_load_and_setup_if_needed( current_dateTime__as_Date_obj );
 
 
-            date_selection_box__day_selection__calendarbox
+                    }, false );
+                });
+
+
+            touch_mouse_pointer_mouseup_events_array.map( function(d){
+                date_selection_box__day_selection__arrow_right__DOM_obj.addEventListener( d, function(){ 
+
+                    console.log("--- please advance the small calendar date by a day");
+
+                    current_date__advance_by_one_day();
+
+                    small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date();
+
+                    console.log("--- DON'T FORGET TO UPDATE THE DAY OF THE VISUALISTION! ");
+
+                    // finally, try loading it! 
+                    check_if_date_available__and_load_and_setup_if_needed( current_dateTime__as_Date_obj );
+
+
+                    }, false );
+                });
+
+
+
+            // SMALL CALENDAR : to the calendar ILLUSTRATION on the small calendar,
+            // to toggle the view of the big calendar 
+            touch_mouse_pointer_mouseup_events_array.map( function(d){
+                small_calendar__date_selection_box__day_selection__calendarbox__DOM_obj.addEventListener( d, function(){ 
+
+                        // copy the calendar date to the big calendar 
+                        big_calendar__set_current_vis_date_as_curr_calendar_date();
+
+                        // update the YEAR.MONTH text of big calendar
+                        big_calendar__set_current_year_month_text_to_current_temp_date();
+
+                        // make the calendar days with the current days … 
+                        big_calendar__wipe_calendar__and__fill_calendar_with_curr_temp_month_days();
+
+                        // hide/show big calendar 
+                        toggle_classname_in_given_dom_element( big_popup_calendar__outer_outer__DOM_obj, "hide_me__aka__display_none__class" );
+                    }, false );
+                });
+
+
+            ///// LARGE CALENDAR : to the left/ righ big calendar arrows 
+
+            // LARGE CALENDAR :  to the left arrow of the big calendar
+            touch_mouse_pointer_mouseup_events_array.map( function(d){
+                big_popup_calendar__current_month_n_year__curr_month_n_year_area__left_arrow__DOM_obj.addEventListener( d, function(){ 
+
+                        console.log("--- click left arrow ");
+
+                        // advance the current month date, in the temp calendar date by a month
+                        big_calendar__retract_calendar_month_by_one_month();
+
+                        // update the year.month text
+                        big_calendar__set_current_year_month_text_to_current_temp_date()
+
+                        // make the calendar days with the current days … 
+                        big_calendar__wipe_calendar__and__fill_calendar_with_curr_temp_month_days();
+
+                    }, false );
+                });
+
+            // LARGE CALENDAR : to the right arrow of the big calendar
+            touch_mouse_pointer_mouseup_events_array.map( function(d){
+                big_popup_calendar__current_month_n_year__curr_month_n_year_area__right_arrow__DOM_obj.addEventListener( d, function(){ 
+
+                        console.log("--- click right arrow ");
+
+                        // advance the current month date, in the temp calendar date by a month
+                        big_calendar__advance_calendar_month_by_one_month();
+
+                        // update the year.month text
+                        big_calendar__set_current_year_month_text_to_current_temp_date()
+
+                        // make the calendar days with the current days … 
+                        big_calendar__wipe_calendar__and__fill_calendar_with_curr_temp_month_days();
+
+                    }, false );
+                });
+
+
+                touch_mouse_pointer_mouseup_events_array.map( function(d){
+                big_popup_calendar__bottom_exit_button__DOM_obj.addEventListener( d, function(){ 
+
+                        // copy the calendar date to the big calendar 
+                        big_calendar__set_current_vis_date_as_curr_calendar_date();
+
+                        // update the YEAR.MONTH text of big calendar
+                        big_calendar__set_current_year_month_text_to_current_temp_date();
+
+                        // make the calendar days with the current days … 
+                        big_calendar__wipe_calendar__and__fill_calendar_with_curr_temp_month_days();
+
+                        // hide/show big calendar 
+                        toggle_classname_in_given_dom_element( big_popup_calendar__outer_outer__DOM_obj, "hide_me__aka__display_none__class" );
+                    }, false );
+                });
+
+
+
+                // // // cancel button for the loading screen 
+
+                touch_mouse_pointer_mouseup_events_array.map( function(d){
+                loading_data_element__dialogue_box_outer__cancel_button_and_text__DOM_obj.addEventListener( d, function(){ 
+
+                        console.log("--- CLICK on the cancel button! ");
+
+                    }, false );
+                });
+
         }     
 
 
@@ -1294,7 +1649,7 @@
 
         var timeline_input_event_handler = function( e ){
 
-            console.log(">>>> timeline_input_event_handler() - pointer at :  "+e.clientX+" / "+e.clientY );
+            // console.log(">>>> timeline_input_event_handler() - pointer at :  "+e.clientX+" / "+e.clientY );
 
             timeline_area__mouse_and_touch_coords_x = Math.floor( e.clientX - timeline_outer_outer__left_offset - timeline_bar_left_offset_px );
 
@@ -1303,10 +1658,10 @@
             debug_window_DOM_element = document.getElementById( "debug_window" );      
 
             // make the out text
-            debug_window_message = "";
+            //// debug_window_message = "";
 
             // starting with the curr mouse/touch coords 
-            debug_window_message += "x/y : "+e.clientX+" ("+timeline_area__mouse_and_touch_coords_x+") / "+e.clientY+" <br>"
+            //// debug_window_message += "x/y : "+e.clientX+" ("+timeline_area__mouse_and_touch_coords_x+") / "+e.clientY+" <br>"
 
 
             // stop scrolling etc
@@ -1316,7 +1671,7 @@
             switch (e.type) {
                 case 'pointerdown':
                     console.log("--- pointerdown !");
-                    debug_window_message += "pointerdown <br>";
+                    ////  debug_window_message += "pointerdown <br>";
                     timeline_area__is_mouse_down = true;
                 case 'pointermove':
                 case 'MSPointerDown':
@@ -1337,7 +1692,7 @@
                     break;
                 case 'pointerup':
                     console.log("--- pointerup !");
-                    debug_window_message += "pointerup <br/>";      
+                    // debug_window_message += "pointerup <br/>";      
                     timeline_area__is_mouse_down = false;          
                 case 'pointerout':
                 case 'pointercancel':
@@ -1346,7 +1701,7 @@
                     // debug_window_message += "MSPointerDown";
                 case 'MSPointerOut':
                     console.log("--- MSPointerOut !");
-                    debug_window_message += "MSPointerOut <br>";
+                    // // debug_window_message += "MSPointerOut <br>";
                     timeline_area__is_mouse_down = false;
                 case 'MSPointerCancel':
                     for (var i = 0, l = timeline_area__touch_POINTS.length; i<l; i++) {
@@ -1384,7 +1739,7 @@
             }
 
 
-
+        /*
             // DEBUG 
             // add the mousedown status 
             debug_window_message += "<br> timeline_area__is_mouse_down : "+timeline_area__is_mouse_down ;
@@ -1394,6 +1749,7 @@
             // DEBUG 
             // update debug window 
             debug_window_DOM_element.innerHTML = debug_window_message;
+        */
 
         }
 
@@ -1410,6 +1766,10 @@
 
             console.log("\n>>> update_d3_layer__NEW_NEW() ");
 
+            console.log("--- NOT UPDATING D3 layer - WAITING FOR CANVAS VERSION ");
+
+/*            
+
             window.feature.attr( "transform", function(d){
                 var loc = [ d.latlon[0], d.latlon[1] ];
                 var lat_to_px = map.latLngToLayerPoint( loc ).x;
@@ -1418,6 +1778,11 @@
             });
 
             console.log("--- map zoom level : "+map.getZoom() );
+*/
+
+            // test draw with canvas! 
+            map._layers[ current_canvas_layer_id ].drawLayer();
+
         }
 
 
@@ -1429,25 +1794,10 @@
 
             console.log("\n>>> test_draw_from_time_data() of index |"+time_index_as_i );
 
+            console.log("--- NOT test_draw_from_time_data - WAITING FOR CANVAS VERSION ");
+
+/*
             window.feature.style("fill", function(d,i){
-
-        /*
-                // 50 = safety limit
-                // // 10 = to make it a decimal 
-                var new_opacity_val = ( d.p1_data[ time_index_as_i ]/window.max_pm_value );
-
-                // - adding some offsets due to the background colour of the map … 
-                var grey_fill_val = Math.floor( new_opacity_val * 292 ) +58 ; 
-
-                // only give feedback for the first 20 values :) 
-                if( i < 1 ){ 
-                    console.log( i+" : got in value "+d.p1_data[ time_index_as_i ]+" and got out value : "+new_opacity_val );
-                }
-
-                // return "rgba( 255, 255, 128, "+new_opacity_val+")" ;
-
-                return "rgb("+grey_fill_val+","+grey_fill_val+","+(grey_fill_val/4)+")";
-        */
                 var curr_data_val = d.p1_data[ time_index_as_i ];
 
                 // Colours : different handling of zero values 
@@ -1468,6 +1818,14 @@
 
             // and update the time indication ( up in the middle of the window, in text )
             window.time_marker_box__central_element.innerHTML = window.all_timestamps_in_data[ time_index_as_i ];
+*/  
+            
+            // test draw with canvas! 
+            console.log( "SOON - test drawing with canvas ");
+            console.log( "- map._layers : ");
+            console.log( map._layers );
+            console.log( map._layers[ current_canvas_layer_id ] );
+            map._layers[ current_canvas_layer_id ].drawLayer();
 
         }
 
@@ -1479,6 +1837,8 @@
 
             console.log("\n>>> draw_from_time_data__object_oriented_version() of index |"+current_day_data_index );
 
+            console.log("--- NOT DRAWING - disabled waiting for CANVAS VERSION ");
+/*
             window.feature.style("fill", function(d,i){
 
                 var curr_data_val = d.p1_data[ current_day_data_index ];
@@ -1496,6 +1856,11 @@
 
             // TEMP TEMP TEMP 
             console.log("--- current time at data sample period index "+current_day_data_index+" : "+all_timestamps_in_data[ current_day_data_index ] );
+  */
+
+            // draw canvas stuff 
+            map._layers[ current_canvas_layer_id ].drawLayer();
+
         }        
 
 
@@ -1523,11 +1888,11 @@
                      console.log("--- mouseX/Y decimals vs screen w/h : "+window.mouseX_vs_screen_w_decimal+","+window.mouseY_vs_screen_w_decimal );
 
                      // now redraw with the relevant time :) 
-                     var current_index = Math.floor( window.mouseX_vs_screen_w_decimal * window.num_of_data_values_per_sensor ) ;
-                     console.log(" - current data index : "+current_index+" / "+window.num_of_data_values_per_sensor );
+                     var current_data_index = Math.floor( window.mouseX_vs_screen_w_decimal * window.num_of_data_values_per_sensor ) ;
+                     console.log(" - current data index : "+current_data_index+" / "+window.num_of_data_values_per_sensor );
 
                      // now redraw
-                     test_draw_from_time_data( current_index );
+                     test_draw_from_time_data( current_data_index );
 
                 }, false );
         }
@@ -1551,6 +1916,10 @@
             // set the current day date as the current day
             current_dateTime__as_Date_obj = date_to_check__as_date_obj;
 
+            // [ NOTE : this is also done in the set_visuals_according_to_days_data_refresh() ] 
+            //   set the small calendar date text to the current date
+            // // small_calendar__set_curr_YEAR_MONTH_AND_DAY__text_to_current_date();
+
             // get date as string - can be useful as a key for the day data objects array             
             // - input : date object 
             relevant_day_as_YY_MM_DD_string = generate_date_as_year_month_day_string( date_to_check__as_date_obj );
@@ -1571,7 +1940,15 @@
                 //      - update map markers with new data
                 //      - redraw from frame zero.
 
-                current_index = 0;
+
+                // get the date as a YYYY-MM-DD string that cna 
+                // - be used as an array key
+                current_dateTime__as_YY_MM_DD_string = relevant_day_as_YY_MM_DD_string;
+
+                // reset frame index 
+                current_data_index = 0;
+                // current_day_data_index = 0;
+                current_timeslider_position_on_bar_as_decimal = 0;
 
                 // find all the timestamps
                 // make_all_timestamps();
@@ -1584,7 +1961,7 @@
                 update_d3_layer__NEW_NEW()
 
                 // finally draw 
-                test_draw_from_time_data( current_index );
+                test_draw_from_time_data( current_data_index );
 
 
             }else{
@@ -1619,6 +1996,11 @@
         var load_days_data__and_setup_as_appropriate = function( days_date_to_load ){
 
             console.log("\n>>> load_days_data__and_setup_as_appropriate() - load_new_data_if_date_not_avail : |"+days_date_to_load+"|" );
+
+
+
+            // show the loading screen! 
+            show_loading_screen();
 
 
             // get relevant url 
@@ -1659,6 +2041,12 @@
                                     // //
                                     // test_new__PART_TWO();
 
+
+                                    // reset frame index 
+                                    current_data_index = 0;
+                                    // current_day_data_index = 0;
+                                    current_timeslider_position_on_bar_as_decimal = 0;
+
                                     // and then the more object oriented version
                                     parse_loaded_data_into_something_visualisation_friendly( current_dateTime__as_YY_MM_DD_string );
 
@@ -1679,26 +2067,23 @@
 
                                     // only do this the first time 
                                     // the data is loaded 
-                            //        if( has_data_been_loaded_for_first_time === false ){
-                                        // make sure the map markers updates on map change 
-                                        bind_event_listeners_for_map_update_on_map_pan_zoom_change();
-                                        update_d3_layer__NEW_NEW()
 
-                                        // - control time and update time with mouse movement
-                                        if( allow_old_school_mouse_x_vs_screen_visualisation_interaction === 1 ){
-                                            bind_mouseove_listener__for_interactive_interactions();
-                                        }
+                                    // make sure the map markers updates on map change 
+                                    bind_event_listeners_for_map_update_on_map_pan_zoom_change();
+                                    update_d3_layer__NEW_NEW()
 
+                                    // - control time and update time with mouse movement
+                                    if( allow_old_school_mouse_x_vs_screen_visualisation_interaction === 1 ){
+                                        bind_mouseove_listener__for_interactive_interactions();
+                                    }
 
-                                        // then make a note that the
-                                        //  data has been loaded for the first time                                         
-                            //            has_data_been_loaded_for_first_time = true;
-                            //        }
+                                
+                                    // remove loading screen 
+                                    hide_loading_screen();
 
                                     // draw the first frame! 
                                     test_draw_from_time_data( current_day_data_index );                                    
-
-                });
+                    });
         }
 
 
@@ -1710,7 +2095,7 @@
             console.log("\n>>> generate_url_for_data_from_date_object : generateing url from date obejct : |"+in_date_object+"|");
 
             // - build url 
-            out_url = base_urls_to_data__at_different_intervals[ curr_data_time_interval ]+data_url__filename_beginning+generate_date_as_year_month_day_string( in_date_object )+data_url__filename_end;
+            out_url = base_urls_to_data__at_different_intervals[ String( curr_data_time_interval ) ]+data_url__filename_beginning+generate_date_as_year_month_day_string( in_date_object )+data_url__filename_end;
 
             console.log("\t --- generated url |"+out_url+" from input date |"+in_date_object+"|");
 
@@ -1724,11 +2109,12 @@
 
                // - fetch consitutent parts of a date 
             var year_in_input = in_date_object.getFullYear();
-            var month_in_input = in_date_object.getMonth();
+            // var month_in_input = in_date_object.getMonth();
+            var month_in_input = in_date_object.getMonth()+1;
             var day_in_input = in_date_object.getDate();
 
             // - build url 
-            date_as_year_month_day_string = year_in_input+"-"+month_in_input+"-"+day_in_input;
+            var date_as_year_month_day_string = year_in_input+"-"+month_in_input+"-"+day_in_input;
 
             console.log("\t --- got date string : |"+date_as_year_month_day_string+"| from input date |"+in_date_object+"|" );
 
@@ -1776,6 +2162,10 @@
             // V2 : bind event listeners and handlers for intractive events 
             bind_event_listeners_for_interactive_events();
 
+            // and bind event listeners for the calendar 
+            bind_event_listeners_to_calendar_matters();
+
+
 
             // // // // update visuals 
 
@@ -1795,8 +2185,6 @@
 
             console.log("\n>>> test_new__PART_TWO() \n" );
 
-            //
-//            parse_data_into_something_d3_friendly();
 
 
             // and then the more object oriented version
@@ -1828,6 +2216,68 @@
 
 
 
+        ////////////////////   TEST canvas drawing TEST  !   //////////////////
+        ////////////////////   TEST canvas drawing TEST  !   //////////////////
+
+
+        var onDrawLayer = function( info ){
+
+            console.log(">>>> onDrawLayer() ");
+            console.log("--- current current_day_data_index : "+current_day_data_index );
+
+            var starttime = new Date();
+
+            // -------- anfang !? ------ 
+
+
+            // --- make canvas 
+
+            var ctx = info.canvas.getContext( '2d' );
+            ctx.clearRect( 0, 0, info.canvas.width, info.canvas.height );
+
+
+            // --- get pixelszie at current zoom level
+            var pixel_size_given_zoom_level = ( 20** ( ( map.getZoom() - 2 )/10 ) )+2 ;
+
+            // --- standard fill colour? 
+            ctx.fillStyle = "rgba( 128, 128, 128, 0.5 ) ";
+            ctx.globalAlpha =  0.75 ;
+
+
+            // ---- make loop & draw! 
+
+            // loop 
+            for( var sensor_i = 0; sensor_i < days_data_holder[ current_dateTime__as_YY_MM_DD_string ].lat_lon.length; sensor_i++ ){
+
+                // get pixel position… 
+                var dot_loc = info.layer._map.latLngToContainerPoint( days_data_holder[ current_dateTime__as_YY_MM_DD_string ].lat_lon[ sensor_i ] );
+
+                // get relevant fillstyle/colour  
+                var curr_fill_col = _colorScale( days_data_holder[ current_dateTime__as_YY_MM_DD_string ].data__p1_values[ sensor_i ][ current_day_data_index ] );
+
+                ctx.fillStyle = curr_fill_col;
+
+                // debug printing … of data val and colour … 
+        /*                
+                if( sensor_i % 200 === 0 ){
+                    console.log("-- current sensor val = "+days_data_holder[ current_dateTime__as_YY_MM_DD_string ].data__p1_values[ sensor_i ][ current_day_data_index ]+" - and col : "+curr_fill_col );
+                }                
+        */
+                // draw 
+                ctx.fillRect( dot_loc.x, dot_loc.y, pixel_size_given_zoom_level, pixel_size_given_zoom_level );
+
+            }
+
+            // -------- ende!? ------ 
+
+            console.log("---- so, that redraw too "+( new Date() - starttime )+" milliseconds ");
+
+        }
+
+
+
+
+
         ////////////////////   STARTUP !   //////////////////
         ////////////////////   STARTUP !   //////////////////
         ////////////////////   STARTUP !   //////////////////
@@ -1838,6 +2288,7 @@
         // make map 
         // make map 
         // make map 
+
 
 
         var map = L.map('map').setView([51.21909462044748, 10.328125], 6);
@@ -1847,21 +2298,37 @@
             /*  'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' 'http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png' */  'https://maps.luftdaten.info/tiles/{z}/{x}/{y}.png' , {
             attribution: '&copy; ' + mapLink + ' Contributors',
             maxZoom: 18,
-            }).addTo(map);
+            } ).addTo(map);
 
-        map._initPathRoot();
+        // map._initPathRoot();
 
         // add the d3 layer in the leaflet map… where the d3 content will be… 
-        window.svg = d3.select("#map").select("svg");
-        window.g = window.svg.append("g");
+        // window.svg = d3.select("#map").select("svg");
+//        window.svg = L.svg();
+//        window.g = window.svg.append("g");
         
 
-        // GO! 
+        // let's try adding a canvas layer! 
+        L.canvasLayer()
+            .delegate( this )
+            .addTo( map );
+
+        // IMPORTANT CANVAS MATTER! 
+        // get the id of the canvas layer … 
+        current_canvas_layer_id = Object.keys( map._layers )[1];
+
+
+
+
+
+        // // // // //  GO!  ---- the normal setup
         initial_setup();
 
         // TEST TEST TEST 
         //// load some data : 
-        check_if_date_available__and_load_and_setup_if_needed( new Date( 2019,3,13 ) );
+        // check_if_date_available__and_load_and_setup_if_needed( new Date( 2019,3,27 ) );
+        var timestamp_now = new Date();
+        check_if_date_available__and_load_and_setup_if_needed( new Date( timestamp_now.getFullYear(), timestamp_now.getMonth(), timestamp_now.getDate() ) );
 
 
 
@@ -1870,3 +2337,46 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
